@@ -1,4 +1,4 @@
-package hu.bep.persistence.model;
+package hu.bep.persistence;
 
 import javax.persistence.*;
 

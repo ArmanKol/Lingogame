@@ -1,4 +1,4 @@
-package hu.bep.lingogame;
+package hu.bep;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
