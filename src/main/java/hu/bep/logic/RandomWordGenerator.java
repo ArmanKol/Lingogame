@@ -4,22 +4,21 @@ import java.util.Random;
 
 public class RandomWordGenerator {
 
-    private int min, max;
+    private int length;
 
-    public RandomWordGenerator(int min, int max){
-        this.min = min;
-        this.max = max;
+    public RandomWordGenerator(int length){
+        this.length = length;
     }
-
 
     public int getRandomNumber(){
         int randomInt;
         Random random = new Random();
+        int min = 0;
 
-        randomInt = random.nextInt(max - min + 1) + min;
+        randomInt = random.nextInt(length - min + 1) + min;
 
-        if(!(randomInt >= min && randomInt <= max)){
-            randomInt = random.nextInt(max - min + 1) + min;
+        if(!(randomInt >= min && randomInt <= length)){
+            randomInt = random.nextInt(length - min + 1) + min;
         }
 
         return randomInt;
