@@ -6,14 +6,11 @@ import hu.bep.persistence.WordRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,13 +23,20 @@ public class GameController{
 
     @GetMapping("/api/randomword/{length}")
     public String getRandomWord(@PathVariable int length){
-        List<Integer> listWithWordsID = wordRepository.listWithIDs(length);
-        RandomWordGenerator randomGenerator = new RandomWordGenerator(listWithWordsID.size());
+        try{
+            List<Integer> listWithWordsID = wordRepository.listWithIDs(length);
 
-        int randomGeneratedIndex = randomGenerator.getRandomNumber();
-        int wordID = listWithWordsID.get(randomGeneratedIndex);
+            RandomWordGenerator randomGenerator = new RandomWordGenerator(listWithWordsID.size());
 
-        return wordRepository.findByID(wordID).getWord();
+            int randomGeneratedIndex = randomGenerator.getRandomNumber();
+            int wordID = listWithWordsID.get(randomGeneratedIndex);
+
+            return wordRepository.findByID(wordID).getWord();
+        }catch(NullPointerException npe){
+            return "NOT_FOUND";
+        }catch(IndexOutOfBoundsException iobe){
+            return "NOT_FOUND";
+        }
     }
 
     @GetMapping("/api/lingo/start")

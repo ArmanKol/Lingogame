@@ -25,7 +25,6 @@ public class GameEngine {
     }
 
     public void start(String word){
-        System.out.println("START");
         gameState = GameState.PLAYING;
         levelState= LevelState.FIVE_LETTER_WORD;
         guessesLeft = 5;
@@ -48,7 +47,6 @@ public class GameEngine {
         }else{
             guessesLeft--;
         }
-        System.out.println("Guesses left: "+guessesLeft);
     }
 
     private void nextRound(){
@@ -88,9 +86,7 @@ public class GameEngine {
         }
     }
 
-    private boolean wordGuessed(String inputWord){
-        StringBuilder guessedWord = new StringBuilder();
-
+    public boolean wordGuessed(String inputWord){
         feedbackWord = checkWord(inputWord).get(0).toString();
 
         if(inputWord.equals(wordToGuess)){
@@ -112,9 +108,9 @@ public class GameEngine {
 
         StringBuilder feedBackWord = createFeedbackString(finalFeedback);
 
-        System.out.println("-----------");
-        System.out.println(feedBackWord);
-        System.out.println("-----------");
+//        System.out.println("-----------");
+//        System.out.println(feedBackWord);
+//        System.out.println("-----------");
 
         returnValues.put(0, feedBackWord);
 
@@ -220,6 +216,10 @@ public class GameEngine {
 
     public String getFeedbackWord(){
         return feedbackWord;
+    }
+
+    public LevelState getLevelState(){
+        return levelState;
     }
 
 }

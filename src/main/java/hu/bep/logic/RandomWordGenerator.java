@@ -24,4 +24,8 @@ public class RandomWordGenerator {
         return randomInt;
     }
 
+    public int getLength(){
+        return length;
+    }
+
 }
