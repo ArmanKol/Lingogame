@@ -2,10 +2,12 @@ package hu.bep.presentation;
 
 import hu.bep.logic.GameEngine;
 import hu.bep.logic.RandomWordGenerator;
+import hu.bep.logic.state.GameState;
 import hu.bep.persistence.WordRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,25 +34,35 @@ public class GameController{
             int wordID = listWithWordsID.get(randomGeneratedIndex);
 
             return wordRepository.findByID(wordID).getWord();
-        }catch(NullPointerException npe){
-            return "NOT_FOUND";
         }catch(IndexOutOfBoundsException iobe){
+            logger.info(iobe);
             return "NOT_FOUND";
         }
     }
 
     @GetMapping("/api/lingo/start")
-    public void startGame(){
-        String randomWord = getRandomWord(5);
+    public ResponseEntity<String> startGame(){
+        String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
         gameEngine.start(randomWord);
         logger.info(randomWord);
+
+        return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
     }
 
-    @GetMapping("/api/lingo/{word}")
+    @GetMapping("/api/lingo/guess/{word}")
     public ResponseEntity<String> guessWord(@PathVariable String word){
-        gameEngine.roundController(word);
+        if(gameEngine.gameStarted()){
+            gameEngine.roundController(word);
 
-        return ResponseEntity.ok(gameEngine.getFeedbackWord());
+            if(gameEngine.isWordGuessed()){
+                String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
+                logger.info(randomWord);
+                gameEngine.nextRound(randomWord);
+            }
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+        }
     }
 
 }

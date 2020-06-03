@@ -6,13 +6,26 @@
 </head>
 <body>
     <div id="start">
-        <button id="startButton" onclick="startGame()">Start game</button>
+        <button id="startButton" onclick="startGame()">Start/Restart game</button>
+    </div>
+
+    <div id="gameInfo">
+        <p>Beurten over: </p><p id="guessesLeft"></p>
+        <p>Score: </p><p id="score"></p>
+        <p>Woord lengte: </p><p id="wordLength"></p>
+        <p>Feedback: </p><p id="feedbackWord"></p>
     </div>
 
     <div id="game">
-        <p id="feedbackWord"></p><br>
         <input type="text" id="inputWord">   
         <button id="sendGuessButton" onclick="sendWord()">Raden</button> 
+    </div>
+
+    <div id="end">
+        <p>Je hebt gewonnen!</p>
+        <p>Je hebt een totaal score van: </p>
+        <p id="scoreEnd"></p>
+
     </div>
 </body>
 <script src="index.js"></script>
