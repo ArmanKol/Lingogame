@@ -3,14 +3,13 @@ package hu.bep.logic;
 import com.google.gson.JsonObject;
 import hu.bep.logic.state.GameState;
 import hu.bep.logic.state.LevelState;
-import hu.bep.presentation.GameController;
+import hu.bep.persistence.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class GameEngine {
     private String wordToGuess;
@@ -64,7 +63,7 @@ public class GameEngine {
         }
     }
 
-    public void nextRound(String word){
+    public void nextRound(String newWord){
         //levelStateController();
         if(gameState == GameState.WON){
             return;
@@ -73,7 +72,7 @@ public class GameEngine {
         wordGuessed = false;
         charsFromWordToGuess.clear();
         guessesLeft = 5;
-        wordToGuess = word;
+        wordToGuess = newWord;
         fillHashMapWithLetters(wordToGuess, charsFromWordToGuess);
     }
 
@@ -190,6 +189,8 @@ public class GameEngine {
     }
 
     public int getRightLengthByGameState(){
+        int length = 0;
+
         switch(levelState){
             case FIVE_LETTER_WORD:
                 return 5;
@@ -199,7 +200,7 @@ public class GameEngine {
                 return 7;
         }
 
-        return 0;
+        return length;
     }
 
     private void fillHashMapWithLetters(String inputWord, Map<Integer, Character> map){

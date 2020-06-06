@@ -26,6 +26,11 @@ public class Player {
         this.playerName = playername;
     }
 
+    public Player(int totalScore, String playerName){
+        this.totalScore = totalScore;
+        this.playerName = playerName;
+    }
+
     public int getTotalScore(){
         return totalScore;
     }

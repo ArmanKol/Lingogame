@@ -230,11 +230,13 @@ public class GameEngineTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
 
+        System.out.println(gameEngine.getRightLengthByGameState());
+
         assertTrue(gameEngine.getRightLengthByGameState() == 5);
     }
 
     @Test
-    @DisplayName("Volgende ronden geeft een woord lengte van 6 terug")
+    @DisplayName("Volgende ronde geeft een woord lengte van 6 terug")
     void lengthSixWordAtNextRound(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
@@ -273,4 +275,5 @@ public class GameEngineTest {
 
         assertTrue(gameEngine.getGameState() == GameState.WON);
     }
+
 }

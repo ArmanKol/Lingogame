@@ -7,6 +7,10 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.ui.Model;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,4 +83,39 @@ public class GameControllerTest {
         JsonObject object = JsonParser.parseString(body).getAsJsonObject();
         assertFalse(object.get("won").getAsBoolean());
     }
+
+    @Test
+    @Order(7)
+    @DisplayName("Wanneer je hebt verloren of gewonnen kun je score opslaan")
+    void gameCanBeSavedWhenNotPlayingAnymore(){
+        controller.startGame();
+        String body = "";
+
+        for(int g=0; g < 6; g++){
+            controller.guessWord("test");
+        }
+
+        body = controller.saveScore("player").getBody();
+
+        assertTrue(body.equals("Saved"));
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Wanneer je hebt speelt kun je GEEN score opslaan")
+    void gameCanNotBeSavedWhenPlaying(){
+        controller.startGame();
+        String body = "";
+
+        for(int g=0; g < 5; g++){
+            controller.guessWord("tata");
+        }
+
+        body = controller.saveScore("player2").getBody();
+        System.out.println(body);
+
+        assertTrue(body.equals("Could not be saved"));
+    }
+
+
 }
