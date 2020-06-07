@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 public class GameController{
     private static Logger logger = LogManager.getLogger(GameController.class);
-    private GameEngine gameEngine = new GameEngine();
 
     @Autowired
     private WordRepository wordRepository;
@@ -50,37 +49,55 @@ public class GameController{
 
     @GetMapping("/api/lingo/start")
     public ResponseEntity<String> startGame(HttpSession session){
-        String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
+        GameEngine gameEngine = new GameEngine();
 
-        logger.info(randomWord);
+        if(session.isNew()){
+            String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
 
-        if(gameEngine.start(randomWord)){
-            session.setAttribute("word", randomWord);
-            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+            logger.info(session.isNew());
+            logger.info(randomWord);
+
+            if(gameEngine.start(randomWord)){
+                session.setAttribute("gameEngine", gameEngine);
+                return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+            }
         }
+
+        return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/api/lingo/guess/{word}")
     public ResponseEntity<String> guessWord(@PathVariable String word, HttpServletRequest request){
-        if(gameEngine.gameStarted()){
-            gameEngine.roundController(word);
+        if(request.getSession(false) == null){
+            return new ResponseEntity("No session available", HttpStatus.BAD_REQUEST);
+        }
 
-            if(gameEngine.isWordGuessed()){
-                String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
+        GameEngine gameEnginee = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+
+        if(gameEnginee.gameStarted()){
+            gameEnginee.roundController(word);
+
+            if(gameEnginee.isWordGuessed()){
+                String randomWord = getRandomWord(gameEnginee.getRightLengthByGameState());
                 logger.info(randomWord);
-                gameEngine.nextRound(randomWord);
-                request.setAttribute("word", randomWord);
+                gameEnginee.nextRound(randomWord);
             }
-            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+            return new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
         }else{
-            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.CONFLICT);
         }
     }
 
     @RequestMapping("/api/lingo/savescore/{name}")
-    public ResponseEntity<String> saveScore(@PathVariable String name){
+    public ResponseEntity<String> saveScore(@PathVariable String name, HttpServletRequest request){
+        if(request.getSession(false) == null){
+            return new ResponseEntity("No session available", HttpStatus.BAD_REQUEST);
+        }
+
+        GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+
         if(gameEngine.getGameState() != GameState.PLAYING){
             String playerName = name;
             int score = gameEngine.getScore();

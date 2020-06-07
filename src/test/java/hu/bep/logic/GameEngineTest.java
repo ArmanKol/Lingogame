@@ -233,6 +233,17 @@ public class GameEngineTest {
     }
 
     @Test
+    @DisplayName("Game is niet gestart getGameInfo geeft start = false terug")
+    void gameNotStartedGameInfo(){
+        GameEngine gameEngine = new GameEngine();
+
+        String gameInfo = gameEngine.getGameInfo();
+
+        assertEquals("{\"start\":false}", gameInfo);
+    }
+
+
+    @Test
     @DisplayName("Game is gestart en geeft true terug")
     void gameStarted(){
         GameEngine gameEngine = new GameEngine();
