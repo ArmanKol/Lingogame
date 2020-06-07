@@ -97,14 +97,30 @@ public class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Als het te raden woord 6 characters heeft moet de levelstate == LevelState.SIX_LETTER_WORD")
-    void gameStatewith6LetterWord(){
+    @DisplayName("Als er een verkeerde lengte wordt meegegeven dan de levelstate moet er een false returnen")
+    void gameCantStartWithWrongWordLength(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = papier
-        gameEngine.start("papier");
+        boolean started = gameEngine.start("papier");
 
-        assertTrue(gameEngine.getLevelState() == LevelState.SIX_LETTER_WORD);
+        assertFalse(started);
+    }
+
+    @Test
+    @DisplayName("De game kan gestart worden als de juiste woord lengte word meegegeven")
+    void gameCanStartWithCorrectWordLength(){
+        GameEngine gameEngine = new GameEngine();
+
+        //word to guess = astma
+        boolean started = gameEngine.start("astma");
+
+        boolean score = gameEngine.getScore() == 0;
+        boolean gameState = gameEngine.getGameState() == GameState.PLAYING;
+        boolean guessesLeft = gameEngine.getGivenWord().length() > 0;
+        boolean gameStarted = score && gameState && guessesLeft;
+
+        assertTrue(gameStarted);
     }
 
     @Test
@@ -260,6 +276,7 @@ public class GameEngineTest {
 
         assertTrue(gameEngine.getRightLengthByGameState() == 7);
     }
+
     @Test
     @DisplayName("Na het raden van de laatste woord in de laatste ronde moet je een WIN krijgen")
     void getWinAfterWinning(){

@@ -3,7 +3,6 @@ package hu.bep.logic;
 import com.google.gson.JsonObject;
 import hu.bep.logic.state.GameState;
 import hu.bep.logic.state.LevelState;
-import hu.bep.persistence.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,14 +28,22 @@ public class GameEngine {
         levelState= LevelState.FIVE_LETTER_WORD;
     }
 
-    public void start(String word){
-        charsFromWordToGuess.clear();
-        gameState = GameState.PLAYING;
+    public boolean start(String word){
+        boolean returnValue = false;
         levelState= LevelState.FIVE_LETTER_WORD;
-        guessesLeft = 5;
-        score = 0;
-        wordToGuess = word;
-        fillHashMapWithLetters(wordToGuess, charsFromWordToGuess);
+
+        if(word.length() == getRightLengthByGameState()){
+            charsFromWordToGuess.clear();
+            gameState = GameState.PLAYING;
+            guessesLeft = 5;
+            score = 0;
+            wordToGuess = word;
+            fillHashMapWithLetters(wordToGuess, charsFromWordToGuess);
+
+            returnValue = true;
+        }
+
+        return returnValue;
     }
 
     public boolean gameStarted(){
@@ -107,10 +114,6 @@ public class GameEngine {
         replaceIncorrectChars(finalFeedback, hasCharAtDifferentIndex);
 
         StringBuilder feedBackWord = createFeedbackString(finalFeedback);
-
-//        System.out.println("-----------");
-//        System.out.println(feedBackWord);
-//        System.out.println("-----------");
 
         returnValues.put(0, feedBackWord);
 
@@ -189,8 +192,6 @@ public class GameEngine {
     }
 
     public int getRightLengthByGameState(){
-        int length = 0;
-
         switch(levelState){
             case FIVE_LETTER_WORD:
                 return 5;
@@ -198,9 +199,9 @@ public class GameEngine {
                 return 6;
             case SEVEN_LETTER_WORD:
                 return 7;
+            default:
+                return 0;
         }
-
-        return length;
     }
 
     private void fillHashMapWithLetters(String inputWord, Map<Integer, Character> map){
@@ -221,7 +222,7 @@ public class GameEngine {
             gameInfo.addProperty("wordlength", getRightLengthByGameState());
             gameInfo.addProperty("feedbackword", feedbackWord);
         }else if(gameState == null){
-            gameInfo.addProperty("start", "Start a game first");
+            gameInfo.addProperty("start", false);
         }
 
         return gameInfo.toString();

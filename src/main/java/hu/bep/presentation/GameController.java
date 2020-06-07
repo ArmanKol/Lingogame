@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.Response;
 import java.util.List;
 
 @RestController
@@ -51,17 +49,21 @@ public class GameController{
     }
 
     @GetMapping("/api/lingo/start")
-    public ResponseEntity<String> startGame(){
+    public ResponseEntity<String> startGame(HttpSession session){
         String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
 
-        gameEngine.start(randomWord);
         logger.info(randomWord);
 
-        return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+        if(gameEngine.start(randomWord)){
+            session.setAttribute("word", randomWord);
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+        }
     }
 
     @GetMapping("/api/lingo/guess/{word}")
-    public ResponseEntity<String> guessWord(@PathVariable String word){
+    public ResponseEntity<String> guessWord(@PathVariable String word, HttpServletRequest request){
         if(gameEngine.gameStarted()){
             gameEngine.roundController(word);
 
@@ -69,6 +71,7 @@ public class GameController{
                 String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
                 logger.info(randomWord);
                 gameEngine.nextRound(randomWord);
+                request.setAttribute("word", randomWord);
             }
             return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
         }else{
@@ -86,7 +89,7 @@ public class GameController{
 
             return new ResponseEntity<>("Saved", HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("Could not be saved", HttpStatus.OK);
+            return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
         }
     }
 
