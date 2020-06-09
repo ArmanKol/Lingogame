@@ -2,7 +2,6 @@ package hu.bep.logic;
 
 
 import hu.bep.logic.state.GameState;
-import hu.bep.logic.state.LevelState;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -113,7 +112,7 @@ public class GameEngineTest {
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = astma
-        boolean started = gameEngine.start("astma");
+        gameEngine.start("astma");
 
         boolean score = gameEngine.getScore() == 0;
         boolean gameState = gameEngine.getGameState() == GameState.PLAYING;
@@ -140,7 +139,7 @@ public class GameEngineTest {
         gameEngine.start("hallo");
         gameEngine.roundController("hallo");
 
-        assertTrue(gameEngine.getScore() == 50);
+        assertSame(50, gameEngine.getScore());
     }
 
     @Test
@@ -151,7 +150,7 @@ public class GameEngineTest {
         gameEngine.roundController("mamaa");
         gameEngine.roundController("hallo");
 
-        assertTrue(gameEngine.getScore() == 40);
+        assertSame(40, gameEngine.getScore());
     }
 
     @Test
@@ -163,7 +162,7 @@ public class GameEngineTest {
         gameEngine.roundController("pecht");
         gameEngine.roundController("hallo");
 
-        assertTrue(gameEngine.getScore() == 30);
+        assertSame(30, gameEngine.getScore());
     }
 
     @Test
@@ -176,7 +175,7 @@ public class GameEngineTest {
         gameEngine.roundController("adres");
         gameEngine.roundController("hallo");
 
-        assertTrue(gameEngine.getScore() == 20);
+        assertSame(20, gameEngine.getScore());
     }
 
     @Test
@@ -191,7 +190,7 @@ public class GameEngineTest {
         gameEngine.roundController("pralo");
         gameEngine.roundController("hallo");
 
-        assertTrue(gameEngine.getScore() == 10);
+        assertSame(10, gameEngine.getScore());
     }
 
     @Test
@@ -207,7 +206,7 @@ public class GameEngineTest {
         gameEngine.roundController("astma");
         gameEngine.roundController("appel");
 
-        assertTrue(gameEngine.getGameState() == GameState.LOST);
+        assertSame(GameState.LOST, gameEngine.getGameState());
     }
 
     @Test
@@ -257,9 +256,7 @@ public class GameEngineTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
 
-        System.out.println(gameEngine.getRightLengthByGameState());
-
-        assertTrue(gameEngine.getRightLengthByGameState() == 5);
+        assertSame(5, gameEngine.getRightLengthByGameState());
     }
 
     @Test
@@ -270,7 +267,7 @@ public class GameEngineTest {
         gameEngine.roundController("papie");
         gameEngine.nextRound("troela");
 
-        assertTrue(gameEngine.getRightLengthByGameState() == 6);
+        assertSame(6, gameEngine.getRightLengthByGameState());
     }
 
     @Test
@@ -285,7 +282,7 @@ public class GameEngineTest {
         gameEngine.roundController("troela");
         gameEngine.nextRound("sevenen");
 
-        assertTrue(gameEngine.getRightLengthByGameState() == 7);
+        assertSame(7, gameEngine.getRightLengthByGameState());
     }
 
     @Test
@@ -301,7 +298,7 @@ public class GameEngineTest {
         gameEngine.nextRound("afstand");
         gameEngine.roundController("afstand");
 
-        assertTrue(gameEngine.getGameState() == GameState.WON);
+        assertSame(GameState.WON, gameEngine.getGameState());
     }
 
 }

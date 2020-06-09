@@ -17,7 +17,7 @@ public class GameEngine {
     private int score;
     private GameState gameState;
     private LevelState levelState;
-    private boolean wordGuessed;
+    private boolean wordIsGuessed;
 
     private Map<Integer, Character> charsFromWordToGuess = new HashMap<Integer, Character>();
     private Map<Integer, Character> charsFromInputWord = new HashMap<Integer, Character>();
@@ -47,7 +47,7 @@ public class GameEngine {
     }
 
     public boolean gameStarted(){
-        if(charsFromWordToGuess.size() > 0 && gameState == GameState.PLAYING){
+        if(!(charsFromWordToGuess.isEmpty()) && gameState == GameState.PLAYING){
             return true;
         }
 
@@ -56,7 +56,7 @@ public class GameEngine {
 
     public void roundController(String wordGuess){
         if(wordGuessed(wordGuess)){
-            wordGuessed = true;
+            wordIsGuessed = true;
             calculateScore();
             levelStateController();
             return;
@@ -76,7 +76,7 @@ public class GameEngine {
             return;
         }
 
-        wordGuessed = false;
+        wordIsGuessed = false;
         charsFromWordToGuess.clear();
         guessesLeft = 5;
         wordToGuess = newWord;
@@ -94,6 +94,8 @@ public class GameEngine {
             case SEVEN_LETTER_WORD:
                 gameState = GameState.WON;
                 break;
+            default:
+                levelState = LevelState.FIVE_LETTER_WORD;
         }
     }
 
@@ -215,7 +217,8 @@ public class GameEngine {
 
         if(gameState == GameState.WON || gameState == GameState.LOST){
             gameInfo.addProperty("score", score);
-            gameInfo.addProperty("won", ((gameState == GameState.WON) ? true : false));
+            gameInfo.addProperty("won", (gameState == GameState.WON));
+            gameInfo.addProperty("feedbackword", feedbackWord);
         }else if(gameState == GameState.PLAYING){
             gameInfo.addProperty("guessesleft", guessesLeft);
             gameInfo.addProperty("score", score);
@@ -249,7 +252,7 @@ public class GameEngine {
     }
 
     public boolean isWordGuessed(){
-        return wordGuessed;
+        return wordIsGuessed;
     }
 
     public void setWordToGuess(String word){

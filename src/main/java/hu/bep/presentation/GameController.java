@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.ws.Response;
 import java.util.List;
 
 @RestController
@@ -79,7 +81,7 @@ public class GameController{
         if(gameEnginee.gameStarted()){
             gameEnginee.roundController(word);
 
-            if(gameEnginee.isWordGuessed()){
+            if(gameEnginee.isWordGuessed() && gameEnginee.getGameState() == GameState.PLAYING){
                 String randomWord = getRandomWord(gameEnginee.getRightLengthByGameState());
                 logger.info(randomWord);
                 gameEnginee.nextRound(randomWord);
@@ -102,12 +104,19 @@ public class GameController{
             String playerName = name;
             int score = gameEngine.getScore();
 
-            scoreboardRepository.save(new Player(score, playerName));
+            scoreboardRepository.save(new Player(playerName, score));
 
             return new ResponseEntity<>("Saved", HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
         }
+    }
+
+    @RequestMapping("/api/lingo/scoreboard")
+    public ResponseEntity<List<Player>> getScoreboard(){
+        List<Player> scoreboard = scoreboardRepository.findAll();
+
+        return new ResponseEntity(scoreboard, HttpStatus.OK);
     }
 
 }

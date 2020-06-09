@@ -4,56 +4,43 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import hu.bep.LingogameApplication;
 import hu.bep.logic.GameEngine;
-import org.junit.Before;
+import hu.bep.persistence.Player;
+import hu.bep.persistence.ScoreboardRepository;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = LingogameApplication.class)
 @WebAppConfiguration
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Game controller")
 public class GameControllerTest {
 
     @Autowired
     private GameController controller;
 
-//    private MockMvc mockMvc;
-//
-//    @Before
-//    public void setup() {
-//        // Process mock annotations
-//        MockitoAnnotations.initMocks(this);
-//
-//        // Setup Spring test in standalone mode
-//        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
-//                .build();
-//
-//    }
+    @Autowired
+    private ScoreboardRepository scoreboardRepository;
 
     @Test
-    @Order(1)
     @DisplayName("Woord raden zonder dat het spel gestart is geeft een error terug")
-    void guessWordNotStartedGivesError(){
+    void guessWordNotStartedGivesError() throws Exception{
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         assertTrue(controller.guessWord("", request).getStatusCode().isError());
     }
 
     @Test
-    @Order(2)
     @DisplayName("Check woord met lengte dat niet in database staat returned NOT_FOUND")
     void wordLength(){
         //Legit word lengths 5,6,7
@@ -62,16 +49,15 @@ public class GameControllerTest {
     }
 
     @Test
-    @Order(3)
     @DisplayName("Woord lengte == 5")
     void givesWordWithLength5(){
         int wordLength = 5;
         String word = controller.getRandomWord(wordLength);
-        assertTrue(word.length() == wordLength);
+
+        assertSame(wordLength, word.length());
     }
 
     @Test
-    @Order(4)
     @DisplayName("Check feedback NOT null")
     void feedbackWordNotThrow() throws Exception{
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -82,21 +68,18 @@ public class GameControllerTest {
     }
 
     @Test
-    @Order(5)
     @DisplayName("Woord raden als het spel gestart is geeft een feedback terug")
     void guessWordStartedGivesfeedback(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         controller.startGame(request.getSession(true));
         String body = controller.guessWord("test", request).getBody();
 
-        System.out.println(body);
-
         JsonObject object = JsonParser.parseString(body).getAsJsonObject();
-        assertTrue(object.get("feedbackword") != null);
+
+        assertNotNull(object.get("feedbackword"));
     }
 
     @Test
-    @Order(6)
     @DisplayName("Als je verliest: win == false response")
     void gameLostSendslostBack(){
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -108,17 +91,16 @@ public class GameControllerTest {
             body = controller.guessWord("test", request).getBody();
         }
 
-        System.out.println(body);
-
         JsonObject object = JsonParser.parseString(body).getAsJsonObject();
         assertFalse(object.get("won").getAsBoolean());
     }
 
     @Test
-    @Order(7)
+    @Transactional
     @DisplayName("Wanneer je hebt verloren of gewonnen kun je score opslaan")
     void gameCanBeSavedWhenNotPlayingAnymore(){
         MockHttpServletRequest request = new MockHttpServletRequest();
+
         controller.startGame(request.getSession(true));
         String body = "";
 
@@ -128,12 +110,13 @@ public class GameControllerTest {
 
         body = controller.saveScore("player", request).getBody();
 
-        assertTrue(body.equals("Saved"));
+        assertEquals("Saved", body);
+
+        scoreboardRepository.deleteByPlayerName("player");
     }
 
     @Test
-    @Order(8)
-    @DisplayName("Wanneer je hebt speelt kun je GEEN score opslaan")
+    @DisplayName("Wanneer je speelt kun je GEEN score opslaan")
     void gameCanNotBeSavedWhenPlaying(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         controller.startGame(request.getSession(true));
@@ -144,13 +127,11 @@ public class GameControllerTest {
         }
 
         body = controller.saveScore("player2", request).getBody();
-        System.out.println(body);
 
-        assertTrue(body.equals("Could not be saved"));
+        assertEquals("Could not be saved", body);
     }
 
     @Test
-    @Order(9)
     @DisplayName("Woord geraden begint een nieuwe ronde")
     void wordGuessedNewRound(){
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -172,7 +153,6 @@ public class GameControllerTest {
     }
 
     @Test
-    @Order(10)
     @DisplayName("Een gestarte game stuurt bij het raden een OK response terug")
     void guessWordAfterStartGivesOk(){
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -180,20 +160,33 @@ public class GameControllerTest {
         GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
 
         if(gameEngine.gameStarted()){
-            assertTrue(controller.guessWord("started", request).getStatusCode() == HttpStatus.OK);
+            assertSame(HttpStatus.OK, controller.guessWord("started", request).getStatusCode());
         }
     }
 
     @Test
-    @Order(10)
     @DisplayName("Score kan niet opgeslagen worden zonder session")
     void scoreCantSaveWhenNoSessionAvailable(){
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         ResponseEntity response = controller.saveScore("Pieter", request);
 
-        assertTrue(response.getStatusCode() == HttpStatus.BAD_REQUEST);
+        assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("No session available", response.getBody());
+    }
+
+    @Test
+    @DisplayName("getScoreboard geeft een response ok met een lijst van legit player object terug")
+    void getScoreboardReturnsListofPlayersWithScore(){
+        ResponseEntity response = controller.getScoreboard();
+        HttpStatus responseStatus = response.getStatusCode();
+        List<Player> scores = (List<Player>) response.getBody();
+
+        for(Player player : scores){
+            assertNotSame(0,player.getId());
+            assertNotNull(player.getPlayerName());
+        }
+        assertSame(HttpStatus.OK, responseStatus);
     }
 
 }

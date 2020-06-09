@@ -16,7 +16,11 @@ public class Player {
     @Column(name = "playername")
     private String playerName;
 
-    public Player(long id, int totalScore, String playerName){
+    public Player(){
+
+    }
+
+    public Player(long id,  String playerName, int totalScore){
         this.id = id;
         this.totalScore = totalScore;
         this.playerName = playerName;
@@ -26,9 +30,9 @@ public class Player {
         this.playerName = playername;
     }
 
-    public Player(int totalScore, String playerName){
-        this.totalScore = totalScore;
-        this.playerName = playerName;
+    public Player(String playername, int totalscore){
+        this.totalScore = totalscore;
+        this.playerName = playername;
     }
 
     public int getTotalScore(){
@@ -49,6 +53,6 @@ public class Player {
 
     @Override
     public String toString(){
-        return "{id:"+id+", total score:"+totalScore+", playername:"+playerName+"}";
+        return "total score:"+totalScore+", playername:"+playerName+"}";
     }
 }

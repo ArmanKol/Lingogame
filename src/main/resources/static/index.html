@@ -2,11 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/nav.css">
     <title>Lingo</title>
 </head>
 <body>
+    <div class="navBar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Game</a></li>
+            <li><a href="scoreboard.html">Score</a></li>
+          </ul>
+    </div>
+
     <div id="start">
         <button id="startButton" onclick="startGame()">Start/Restart game</button>
+        <p id="message"></p>
     </div>
 
     <div id="gameInfo">
@@ -21,13 +32,15 @@
         <button id="sendGuessButton" onclick="sendWord()">Raden</button> 
     </div>
 
-    <div id="end">
+    <div class="end" id="end">
+        <p>Feedback: </p><p id="feedbackWordEnd"></p>
         <p>Je hebt gewonnen!</p>
-        <p>Je hebt een totaal score van: </p>
-        <p id="scoreEnd"></p>
+        <p>Je hebt een totaal score van: </p><p id="totalScore"></p>
+        <input type="text" id="playerName">
+        <button id="saveScore" onclick="saveScore()">Save Score</button>
 
     </div>
 </body>
-<script src="index.js"></script>
+<script src="js/index.js"></script>
 
 </html>
