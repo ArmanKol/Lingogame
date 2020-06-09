@@ -28,7 +28,7 @@ public class GameEngine {
         levelState= LevelState.FIVE_LETTER_WORD;
     }
 
-    public boolean start(String word){
+    public boolean start(final String word){
         boolean returnValue = false;
         levelState= LevelState.FIVE_LETTER_WORD;
 
@@ -50,24 +50,19 @@ public class GameEngine {
         return (!charsWordToGuess.isEmpty() && gameState == GameState.PLAYING);
     }
 
-    public void roundController(String wordGuess){
+    public void roundController(final String wordGuess){
         if(wordGuessed(wordGuess)){
             wordIsGuessed = true;
             calculateScore();
             levelStateController();
-            return;
-        }
-
-        if(guessesLeft == 0){
+        }else if(guessesLeft == 0){
             gameState = GameState.LOST;
-            return;
         }else{
             guessesLeft--;
         }
     }
 
     public void nextRound(String newWord){
-        //levelStateController();
         if(gameState == GameState.WON){
             return;
         }
@@ -96,7 +91,7 @@ public class GameEngine {
         }
     }
 
-    public boolean wordGuessed(String inputWord){
+    public boolean wordGuessed(final String inputWord){
         feedbackWord = checkWord(inputWord).get(0).toString();
 
         return inputWord.equals(wordToGuess);
@@ -191,7 +186,7 @@ public class GameEngine {
     }
 
     public int getRightLengthByGameState(){
-        int rightLength = 0;
+        int rightLength;
 
         switch(levelState){
             case FIVE_LETTER_WORD:
@@ -205,7 +200,6 @@ public class GameEngine {
                 break;
             default:
                 rightLength = 0;
-                break;
         }
 
         return rightLength;
@@ -252,16 +246,8 @@ public class GameEngine {
         return feedbackWord;
     }
 
-    public LevelState getLevelState(){
-        return levelState;
-    }
-
     public boolean isWordGuessed(){
         return wordIsGuessed;
-    }
-
-    public void setWordToGuess(String word){
-        this.wordToGuess = word;
     }
 
 }

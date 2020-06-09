@@ -107,10 +107,9 @@ public class GameController{
         GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
 
         if(gameEngine.getGameState() != GameState.PLAYING){
-            String playerName = name;
             int score = gameEngine.getScore();
 
-            scoreRepository.save(new Player(playerName, score));
+            scoreRepository.save(new Player(name, score));
 
             return new ResponseEntity<>("Saved", HttpStatus.OK);
         }
