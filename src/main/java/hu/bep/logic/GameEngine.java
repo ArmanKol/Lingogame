@@ -19,10 +19,10 @@ public class GameEngine {
     private LevelState levelState;
     private boolean wordIsGuessed;
 
-    private Map<Integer, Character> charsFromWordToGuess = new HashMap<Integer, Character>();
-    private Map<Integer, Character> charsFromInputWord = new HashMap<Integer, Character>();
+    private Map<Integer, Character> charsWordToGuess = new HashMap<Integer, Character>();
+    private Map<Integer, Character> charsInputWord = new HashMap<Integer, Character>();
 
-    private static Logger logger = LogManager.getLogger(GameEngine.class);
+    private static final Logger LOGGER = LogManager.getLogger(GameEngine.class);
 
     public GameEngine(){
         levelState= LevelState.FIVE_LETTER_WORD;
@@ -33,12 +33,12 @@ public class GameEngine {
         levelState= LevelState.FIVE_LETTER_WORD;
 
         if(word.length() == getRightLengthByGameState()){
-            charsFromWordToGuess.clear();
+            charsWordToGuess.clear();
             gameState = GameState.PLAYING;
             guessesLeft = 5;
             score = 0;
             wordToGuess = word;
-            fillHashMapWithLetters(wordToGuess, charsFromWordToGuess);
+            fillHashMapWithLetters(wordToGuess, charsWordToGuess);
 
             returnValue = true;
         }
@@ -47,11 +47,7 @@ public class GameEngine {
     }
 
     public boolean gameStarted(){
-        if(!(charsFromWordToGuess.isEmpty()) && gameState == GameState.PLAYING){
-            return true;
-        }
-
-        return false;
+        return (!charsWordToGuess.isEmpty() && gameState == GameState.PLAYING);
     }
 
     public void roundController(String wordGuess){
@@ -77,10 +73,10 @@ public class GameEngine {
         }
 
         wordIsGuessed = false;
-        charsFromWordToGuess.clear();
+        charsWordToGuess.clear();
         guessesLeft = 5;
         wordToGuess = newWord;
-        fillHashMapWithLetters(wordToGuess, charsFromWordToGuess);
+        fillHashMapWithLetters(wordToGuess, charsWordToGuess);
     }
 
     private void levelStateController(){
@@ -96,6 +92,7 @@ public class GameEngine {
                 break;
             default:
                 levelState = LevelState.FIVE_LETTER_WORD;
+                break;
         }
     }
 
@@ -106,39 +103,39 @@ public class GameEngine {
     }
 
     private Map<Integer, StringBuilder> checkWord(String inputWord){
-        fillHashMapWithLetters(inputWord, charsFromInputWord);
+        fillHashMapWithLetters(inputWord, charsInputWord);
         Map<Integer, StringBuilder> returnValues = new HashMap<Integer, StringBuilder>();
 
-        Map<Integer, Character> hasCharAtDifferentIndex = new HashMap<Integer, Character>();
+        Map<Integer, Character> hasCharAtDiffIndex = new HashMap<Integer, Character>();
         Map<Integer, String> finalFeedback = new HashMap<Integer, String>();
 
-        checkIfCharsCorrect(finalFeedback, hasCharAtDifferentIndex);
-        replaceIncorrectChars(finalFeedback, hasCharAtDifferentIndex);
+        checkIfCharsCorrect(finalFeedback, hasCharAtDiffIndex);
+        replaceIncorrectChars(finalFeedback, hasCharAtDiffIndex);
 
         StringBuilder feedBackWord = createFeedbackString(finalFeedback);
 
         returnValues.put(0, feedBackWord);
 
-        charsFromInputWord.clear();
+        charsInputWord.clear();
         return returnValues;
     }
 
     private void checkIfCharsCorrect(Map<Integer, String> finalFeedback, Map<Integer, Character> absentChars){
         for(int i =0; i < wordToGuess.length(); i++){
-            try{
-                char charInputWord = charsFromInputWord.get(i);
-                char charWordToGuess = charsFromWordToGuess.get(i);
-
-                if(charInputWord == charWordToGuess){
-                    finalFeedback.put(i, charInputWord+": CORRECT " );
-                }else if(!charsFromWordToGuess.containsValue(charInputWord)){
-                    finalFeedback.put(i, charInputWord + ": INCORRECT ");
-                }else {
-                    absentChars.put(i, charInputWord);
-                    finalFeedback.put(i, charInputWord + ": PRESENT ");
-                }
-            }catch(NullPointerException npe){
+            if(charsInputWord.get(i) == null || charsWordToGuess.get(i) == null){
+                LOGGER.warn("charsInputWord or charsWordToGuess had null");
                 continue;
+            }
+            char charInputWord = charsInputWord.get(i);
+            char charWordToGuess = charsWordToGuess.get(i);
+
+            if(charInputWord == charWordToGuess){
+                finalFeedback.put(i, charInputWord+": CORRECT " );
+            }else if(!charsWordToGuess.containsValue(charInputWord)){
+                finalFeedback.put(i, charInputWord + ": INCORRECT ");
+            }else{
+                absentChars.put(i, charInputWord);
+                finalFeedback.put(i, charInputWord + ": PRESENT ");
             }
         }
     }
@@ -147,16 +144,16 @@ public class GameEngine {
         for(int index: absentChars.keySet()){
             char getCharFromIndex = absentChars.get(index);
 
-            int countCharInput = Collections.frequency(charsFromInputWord.values(), getCharFromIndex);
-            int countCharWordToGuess = Collections.frequency(charsFromWordToGuess.values(), getCharFromIndex);
+            int countCharInput = Collections.frequency(charsInputWord.values(), getCharFromIndex);
+            int countCharWordToGuess = Collections.frequency(charsWordToGuess.values(), getCharFromIndex);
 
-            if(!(countCharInput > countCharWordToGuess)){
+            if(countCharInput < countCharWordToGuess){
                 continue;
             }
 
             if(countCharInput > countCharWordToGuess){
                 finalFeedback.replace(index, getCharFromIndex + ": INCORRECT ");
-                charsFromInputWord.remove(index);
+                charsInputWord.remove(index);
             }
         }
     }
@@ -194,16 +191,24 @@ public class GameEngine {
     }
 
     public int getRightLengthByGameState(){
+        int rightLength = 0;
+
         switch(levelState){
             case FIVE_LETTER_WORD:
-                return 5;
+                rightLength = 5;
+                break;
             case SIX_LETTER_WORD:
-                return 6;
+                rightLength = 6;
+                break;
             case SEVEN_LETTER_WORD:
-                return 7;
+                rightLength = 7;
+                break;
             default:
-                return 0;
+                rightLength = 0;
+                break;
         }
+
+        return rightLength;
     }
 
     private void fillHashMapWithLetters(String inputWord, Map<Integer, Character> map){
@@ -217,7 +222,7 @@ public class GameEngine {
 
         if(gameState == GameState.WON || gameState == GameState.LOST){
             gameInfo.addProperty("score", score);
-            gameInfo.addProperty("won", (gameState == GameState.WON));
+            gameInfo.addProperty("won", gameState == GameState.WON);
             gameInfo.addProperty("feedbackword", feedbackWord);
         }else if(gameState == GameState.PLAYING){
             gameInfo.addProperty("guessesleft", guessesLeft);

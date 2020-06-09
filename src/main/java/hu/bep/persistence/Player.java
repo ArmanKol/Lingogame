@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Player {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
 
     @Column(name = "totalscore")
@@ -20,17 +20,17 @@ public class Player {
 
     }
 
-    public Player(long id,  String playerName, int totalScore){
+    public Player(final long id,  final String playerName, final int totalScore){
         this.id = id;
         this.totalScore = totalScore;
         this.playerName = playerName;
     }
 
-    public Player(String playername){
+    public Player(final String playername){
         this.playerName = playername;
     }
 
-    public Player(String playername, int totalscore){
+    public Player(final String playername, final int totalscore){
         this.totalScore = totalscore;
         this.playerName = playername;
     }
@@ -47,7 +47,7 @@ public class Player {
         return id;
     }
 
-    public void setScore(int score){
+    public void setScore(final int score){
         this.totalScore = score;
     }
 

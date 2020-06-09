@@ -15,59 +15,65 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.Response;
 import java.util.List;
 
 @RestController
 public class GameController{
-    private static Logger logger = LogManager.getLogger(GameController.class);
+    private static final Logger LOGGER = LogManager.getLogger(GameController.class);
 
     @Autowired
     private WordRepository wordRepository;
 
     @Autowired
-    private ScoreboardRepository scoreboardRepository;
+    private ScoreboardRepository scoreRepository;
 
     @GetMapping("/api/randomword/{length}")
     public String getRandomWord(@PathVariable int length){
+        String response;
+
         try{
             List<Integer> listWithWordsID = wordRepository.listWithIDs(length);
 
             RandomWordGenerator randomGenerator = new RandomWordGenerator(listWithWordsID.size());
 
-            int randomGeneratedIndex = randomGenerator.getRandomNumber();
-            int wordID = listWithWordsID.get(randomGeneratedIndex);
+            int randomGenIndex = randomGenerator.getRandomNumber();
+            int wordID = listWithWordsID.get(randomGenIndex);
 
-            return wordRepository.findByID(wordID).getWord();
+            response = wordRepository.findByID(wordID).getWord();
         }catch(IndexOutOfBoundsException iobe){
-            logger.info(iobe);
-            return "NOT_FOUND";
+            LOGGER.info(iobe);
+            response = "NOT_FOUND";
         }
+
+        return response;
     }
 
     @GetMapping("/api/lingo/start")
     public ResponseEntity<String> startGame(HttpSession session){
         GameEngine gameEngine = new GameEngine();
+        ResponseEntity<String> response;
+
 
         if(session.isNew()){
             String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
 
-            logger.info(session.isNew());
-            logger.info(randomWord);
+            LOGGER.info(session.isNew());
+            LOGGER.info(randomWord);
 
             if(gameEngine.start(randomWord)){
                 session.setAttribute("gameEngine", gameEngine);
-                return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
+                response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
+                response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
             }
+        }else{
+            response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.BAD_REQUEST);
+        return response;
     }
 
     @GetMapping("/api/lingo/guess/{word}")
@@ -83,7 +89,7 @@ public class GameController{
 
             if(gameEnginee.isWordGuessed() && gameEnginee.getGameState() == GameState.PLAYING){
                 String randomWord = getRandomWord(gameEnginee.getRightLengthByGameState());
-                logger.info(randomWord);
+                LOGGER.info(randomWord);
                 gameEnginee.nextRound(randomWord);
             }
             return new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
@@ -104,17 +110,17 @@ public class GameController{
             String playerName = name;
             int score = gameEngine.getScore();
 
-            scoreboardRepository.save(new Player(playerName, score));
+            scoreRepository.save(new Player(playerName, score));
 
             return new ResponseEntity<>("Saved", HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
         }
+
+        return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
     }
 
     @RequestMapping("/api/lingo/scoreboard")
     public ResponseEntity<List<Player>> getScoreboard(){
-        List<Player> scoreboard = scoreboardRepository.findAll();
+        List<Player> scoreboard = scoreRepository.findAll();
 
         return new ResponseEntity(scoreboard, HttpStatus.OK);
     }

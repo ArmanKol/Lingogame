@@ -6,7 +6,7 @@ public class RandomWordGenerator {
 
     private int length;
 
-    public RandomWordGenerator(int length){
+    public RandomWordGenerator(final int length){
         this.length = length;
     }
 

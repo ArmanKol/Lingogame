@@ -15,17 +15,15 @@ public class GameEngineTest {
     private static final String length7 = "backend";
 
     private static final String specialChars1 = "back-end";
-    private static final String specialChars2 = "kom-kom";
-    private static final String specialChars3 = "kénkon";
 
-    private static final String wordWithSpace = "su per";
-    private static final String wordWithNumbers = "3huizen";
+    private static final String wordWithSpace = "su pe";
+    private static final String wordWithNumbers = "3huis";
 
     private static final String wordToGuess_5letters = "broer";
     private static final String wordToGuess_5letters_same = "broer";
 
     @Test
-    @DisplayName("Not the same word")
+    @DisplayName("Woord niet geraden")
     void notSameWord(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start(wordToGuess_5letters);
@@ -33,7 +31,7 @@ public class GameEngineTest {
     }
 
     @Test
-    @DisplayName("The same word")
+    @DisplayName("Woord geraden")
     void sameWord(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start(wordToGuess_5letters);
@@ -93,6 +91,33 @@ public class GameEngineTest {
 
 
         assertEquals("b: CORRECT a: INCORRECT c: INCORRECT k: INCORRECT -: INCORRECT ", gameEngine.getFeedbackWord());
+    }
+
+    @Test
+    @DisplayName("Characters met spatie moeten incorrect teruggeven")
+    void charWithSpace(){
+        GameEngine gameEngine = new GameEngine();
+
+        //word to guess = 3huis
+        gameEngine.start(wordWithSpace);
+
+        gameEngine.roundController(wordWithSpace);
+
+        assertEquals("s: CORRECT u: CORRECT  : CORRECT p: CORRECT e: CORRECT ", gameEngine.getFeedbackWord());
+    }
+
+    @Test
+    @DisplayName("Woord met een cijfer erin moet INCORRECT teruggeven")
+    void charWithNumberIncorrect(){
+        GameEngine gameEngine = new GameEngine();
+
+        //word to guess = huise
+        gameEngine.start("huise");
+
+        //Input word 3huis
+        gameEngine.roundController(wordWithNumbers);
+
+        assertEquals("3: INCORRECT h: PRESENT u: PRESENT i: PRESENT s: PRESENT ", gameEngine.getFeedbackWord());
     }
 
     @Test
@@ -211,7 +236,7 @@ public class GameEngineTest {
 
     @Test
     @DisplayName("Woord is geraden moet weer op false nadat een niewe ronde begint")
-    void AfterWordGuessChangeVariable(){
+    void afterWordGuessChangeVariable(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("adres");
         assertFalse(gameEngine.isWordGuessed());
