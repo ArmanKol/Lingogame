@@ -74,6 +74,10 @@ public class GameEngine {
         fillHashMapWithLetters(wordToGuess, charsWordToGuess);
     }
 
+    public boolean nextRoundAllowed(){
+        return (isWordGuessed() && getGameState() == GameState.PLAYING);
+    }
+
     private void levelStateController(){
         switch(levelState){
             case FIVE_LETTER_WORD:

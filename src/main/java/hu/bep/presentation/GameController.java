@@ -87,7 +87,7 @@ public class GameController{
         if(gameEnginee.gameStarted()){
             gameEnginee.roundController(word);
 
-            if(gameEnginee.isWordGuessed() && gameEnginee.getGameState() == GameState.PLAYING){
+            if(gameEnginee.nextRoundAllowed()){
                 String randomWord = getRandomWord(gameEnginee.getRightLengthByGameState());
                 LOGGER.info(randomWord);
                 gameEnginee.nextRound(randomWord);
