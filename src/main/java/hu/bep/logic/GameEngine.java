@@ -19,8 +19,8 @@ public class GameEngine {
     private LevelState levelState;
     private boolean wordIsGuessed;
 
-    private Map<Integer, Character> charsWordToGuess = new HashMap<Integer, Character>();
-    private Map<Integer, Character> charsInputWord = new HashMap<Integer, Character>();
+    private Map<Integer, Character> charsWordToGuess = new HashMap<>();
+    private Map<Integer, Character> charsInputWord = new HashMap<>();
 
     private static final Logger LOGGER = LogManager.getLogger(GameEngine.class);
 
@@ -103,10 +103,10 @@ public class GameEngine {
 
     private Map<Integer, StringBuilder> checkWord(String inputWord){
         fillHashMapWithLetters(inputWord, charsInputWord);
-        Map<Integer, StringBuilder> returnValues = new HashMap<Integer, StringBuilder>();
+        Map<Integer, StringBuilder> returnValues = new HashMap<>();
 
-        Map<Integer, Character> hasCharAtDiffIndex = new HashMap<Integer, Character>();
-        Map<Integer, String> finalFeedback = new HashMap<Integer, String>();
+        Map<Integer, Character> hasCharAtDiffIndex = new HashMap<>();
+        Map<Integer, String> finalFeedback = new HashMap<>();
 
         checkIfCharsCorrect(finalFeedback, hasCharAtDiffIndex);
         replaceIncorrectChars(finalFeedback, hasCharAtDiffIndex);

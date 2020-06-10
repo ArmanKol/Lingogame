@@ -1,5 +1,5 @@
 function startGame(){
-    fetch('http://localhost:8080/api/lingo/start')
+    fetch('api/lingo/start')
         .then(response => response.json().then(data => {
             document.getElementById("guessesLeft").innerHTML = data.guessesleft;
             document.getElementById("score").innerHTML = data.score;

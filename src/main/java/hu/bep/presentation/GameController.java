@@ -11,10 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -79,7 +76,7 @@ public class GameController{
     @GetMapping("/api/lingo/guess/{word}")
     public ResponseEntity<String> guessWord(@PathVariable String word, HttpServletRequest request){
         if(request.getSession(false) == null){
-            return new ResponseEntity("No session available", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
 
         GameEngine gameEnginee = (GameEngine) request.getSession(false).getAttribute("gameEngine");
@@ -98,10 +95,10 @@ public class GameController{
         }
     }
 
-    @RequestMapping("/api/lingo/savescore/{name}")
+    @PostMapping("/api/lingo/savescore/{name}")
     public ResponseEntity<String> saveScore(@PathVariable String name, HttpServletRequest request){
         if(request.getSession(false) == null){
-            return new ResponseEntity("No session available", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
 
         GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
@@ -117,11 +114,11 @@ public class GameController{
         return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
     }
 
-    @RequestMapping("/api/lingo/scoreboard")
+    @GetMapping("/api/lingo/scoreboard")
     public ResponseEntity<List<Player>> getScoreboard(){
         List<Player> scoreboard = scoreRepository.findAll();
 
-        return new ResponseEntity(scoreboard, HttpStatus.OK);
+        return new ResponseEntity<>(scoreboard, HttpStatus.OK);
     }
 
 }

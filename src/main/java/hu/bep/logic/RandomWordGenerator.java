@@ -5,6 +5,7 @@ import java.util.Random;
 public class RandomWordGenerator {
 
     private int length;
+    private Random random = new Random();
 
     public RandomWordGenerator(final int length){
         this.length = length;
@@ -12,7 +13,6 @@ public class RandomWordGenerator {
 
     public int getRandomNumber(){
         int randomInt;
-        Random random = new Random();
         int min = 0;
 
         randomInt = random.nextInt(length - min + 1) + min;
