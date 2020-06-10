@@ -1,0 +1,21 @@
+.navBar li{
+    float: left;
+}
+
+.navBar ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: sticky;
+    background-color: #f1f1f1;
+    border: 1px solid;
+}
+
+.navBar li a{
+    list-style-type: none;
+    display: block;
+    padding: 10px;
+    text-align: center;
+    background-color:#dddddd;
+}

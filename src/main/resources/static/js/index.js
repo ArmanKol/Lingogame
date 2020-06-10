@@ -16,7 +16,7 @@ function startGame(){
 function sendWord(){
     var input = document.getElementById("inputWord").value;
 
-    fetch('http://localhost:8080/api/lingo/guess/'+ input)
+    fetch('api/lingo/guess/'+ input)
         .then(response => response.json().then(data => {
             document.getElementById("guessesLeft").innerHTML = data.guessesleft;
             document.getElementById("score").innerHTML = data.score;
