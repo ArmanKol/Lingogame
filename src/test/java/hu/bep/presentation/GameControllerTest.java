@@ -8,10 +8,13 @@ import hu.bep.persistence.Player;
 import hu.bep.persistence.ScoreboardRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +22,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = LingogameApplication.class)
+@SpringBootTest
 @WebAppConfiguration
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("Game controller")
-public class GameControllerTest {
+class GameControllerTest {
 
     @Autowired
     private GameController controller;

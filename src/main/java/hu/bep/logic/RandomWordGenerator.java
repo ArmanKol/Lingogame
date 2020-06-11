@@ -17,6 +17,10 @@ public class RandomWordGenerator {
 
         randomInt = random.nextInt(length - min + 1) + min;
 
+        if(randomInt != 0){
+            randomInt--;
+        }
+
         return randomInt;
     }
 

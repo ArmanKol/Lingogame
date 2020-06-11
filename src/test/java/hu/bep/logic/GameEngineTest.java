@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Game engine")
-public class GameEngineTest {
+class GameEngineTest {
     private static final String length3 = "ban";
     private static final String length4 = "bana";
     private static final String length5 = "banaa";

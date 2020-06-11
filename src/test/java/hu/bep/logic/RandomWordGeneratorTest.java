@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Random word generator test")
-public class RandomWordGeneratorTest {
+class RandomWordGeneratorTest {
 
     @Test
     @DisplayName("De terug gegeven int mag niet hoger dan de lengte")
