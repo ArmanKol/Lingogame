@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -12,10 +12,18 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingogame</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<name>lingogame</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Lingo Game</name>
+			<url>https://maven.pkg.github.com/armankol/Lingogame</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -102,7 +110,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.3.0.RELEASE</version>
 				<configuration>
 					<mainClass>${start-class}</mainClass>
 				</configuration>
@@ -130,13 +137,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>Lingo Game</name>
-			<url>https://maven.pkg.github.com/armankol/Lingogame</url>
-		</repository>
-	</distributionManagement>
 
 </project>
