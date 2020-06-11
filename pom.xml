@@ -12,7 +12,7 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingogame</artifactId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<name>lingogame</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>hu.bep.LingogameApplication</start-class>
-		<java.version>9</java.version>
+		<java.version>14</java.version>
 	</properties>
 
 	<dependencies>
@@ -102,6 +102,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.3.0.RELEASE</version>
 				<configuration>
 					<mainClass>${start-class}</mainClass>
 				</configuration>
@@ -110,7 +111,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.2</version>
+				<version>0.8.5</version>
 				<executions>
 					<execution>
 						<goals>
