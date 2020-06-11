@@ -17,14 +17,6 @@
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
 
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>lingogame</name>
-			<url>https://maven.pkg.github.com/armankol/lingogame</url>
-		</repository>
-	</distributionManagement>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>hu.bep.LingogameApplication</start-class>
@@ -138,5 +130,13 @@
             </plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Lingo Game</name>
+			<url>https://maven.pkg.github.com/armankol/Lingogame</url>
+		</repository>
+	</distributionManagement>
 
 </project>
