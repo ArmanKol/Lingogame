@@ -12,7 +12,7 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingogame</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<name>lingogame</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
@@ -29,6 +29,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<start-class>hu.bep.LingogameApplication</start-class>
 		<java.version>14</java.version>
+
+		<sonar.projectKey>ArmanKol_Lingogame</sonar.projectKey>
+		<sonar.organization>armankol</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.login>fe632edd1e49a77d8e2e71500a036e8659094f22</sonar.login>
 	</properties>
 
 	<dependencies>

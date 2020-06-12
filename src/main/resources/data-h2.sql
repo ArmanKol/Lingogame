@@ -1,20 +1,20 @@
-INSERT INTO word(id, word) VALUES(1, 'patat');
-INSERT INTO word(id, word) VALUES(2, 'aaien');
-INSERT INTO word(id, word) VALUES(3, 'acuut');
-INSERT INTO word(id, word) VALUES(4, 'afwas');
-INSERT INTO word(id, word) VALUES(5, 'akker');
-INSERT INTO word(id, word) VALUES(6, 'alarm');
+INSERT INTO word(word) VALUES('patat');
+INSERT INTO word(word) VALUES('astma');
+INSERT INTO word(word) VALUES('acuut');
+INSERT INTO word(word) VALUES('afwas');
+INSERT INTO word(word) VALUES('akker');
+INSERT INTO word(word) VALUES('alarm');
 
-INSERT INTO word(id, word) VALUES(7, 'aanpak');
-INSERT INTO word(id, word) VALUES(8, 'aanval');
-INSERT INTO word(id, word) VALUES(9, 'aanzet');
-INSERT INTO word(id, word) VALUES(10, 'aapjes');
-INSERT INTO word(id, word) VALUES(11, 'aardig');
-INSERT INTO word(id, word) VALUES(12, 'aasvis');
+INSERT INTO word(word) VALUES('aanpak');
+INSERT INTO word(word) VALUES('aanval');
+INSERT INTO word(word) VALUES('aanzet');
+INSERT INTO word(word) VALUES('aapjes');
+INSERT INTO word(word) VALUES('aardig');
+INSERT INTO word(word) VALUES('aasvis');
 
-INSERT INTO word(id, word) VALUES(13, 'aaibaar');
-INSERT INTO word(id, word) VALUES(14, 'bevelen');
-INSERT INTO word(id, word) VALUES(15, 'collega');
-INSERT INTO word(id, word) VALUES(16, 'dichter');
-INSERT INTO word(id, word) VALUES(17, 'gehecht');
-INSERT INTO word(id, word) VALUES(18, 'hagelen');
+INSERT INTO word(word) VALUES('aaibaar');
+INSERT INTO word(word) VALUES('bevelen');
+INSERT INTO word(word) VALUES('collega');
+INSERT INTO word(word) VALUES('dichter');
+INSERT INTO word(word) VALUES('gehecht');
+INSERT INTO word(word) VALUES('hagelen');
