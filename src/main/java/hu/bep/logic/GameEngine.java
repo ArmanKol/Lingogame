@@ -95,7 +95,7 @@ public class GameEngine {
         }
     }
 
-    public boolean wordGuessed(final String inputWord){
+    private boolean wordGuessed(final String inputWord){
         feedbackWord = checkWord(inputWord).get(0).toString();
 
         return inputWord.equals(wordToGuess);
@@ -229,6 +229,9 @@ public class GameEngine {
             gameInfo.addProperty("feedbackword", feedbackWord);
         }else if(gameState == null){
             gameInfo.addProperty("start", false);
+            gameInfo.addProperty("guessesleft", guessesLeft);
+            gameInfo.addProperty("score", score);
+            gameInfo.addProperty("wordlength", getRightLengthByGameState());
         }
 
         return gameInfo.toString();

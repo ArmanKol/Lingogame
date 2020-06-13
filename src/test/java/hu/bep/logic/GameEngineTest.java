@@ -1,6 +1,7 @@
 package hu.bep.logic;
 
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import hu.bep.logic.state.GameState;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,10 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Game engine")
 class GameEngineTest {
     private static final String length3 = "ban";
-    private static final String length4 = "bana";
-    private static final String length5 = "banaa";
-    private static final String length6 = "banaan";
-    private static final String length7 = "backend";
 
     private static final String specialChars1 = "back-end";
 
@@ -24,63 +21,39 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Woord niet geraden")
-    void notSameWord(){
+    void wordGuessed_NotSameWord_ReturnFalse(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length3));
+
+        JsonObject gameInfoBefore = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
+        gameEngine.roundController(length3);
+        JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
+
+        int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
+        int guessesLeftAfter = gameInfoAfter.get("guessesleft").getAsInt();
+
+        assertSame(guessesLeftBefore -1, guessesLeftAfter);
     }
 
     @Test
     @DisplayName("Woord geraden")
-    void sameWord(){
+    void wordGuessed_SameWord_ReturnTrue(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start(wordToGuess_5letters);
-        assertTrue(gameEngine.wordGuessed(wordToGuess_5letters_same));
-    }
 
-    @Test
-    @DisplayName("3 letter word")
-    void threeLetterWord(){
-        GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length3));
-    }
+        JsonObject gameInfoBefore = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
+        gameEngine.roundController(wordToGuess_5letters_same);
+        JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
-    @Test
-    @DisplayName("4 letter word")
-    void fourLetterWord(){
-        GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length4));
-    }
+        int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
+        int guessesLeftAfter = gameInfoAfter.get("guessesleft").getAsInt();
 
-    @Test
-    @DisplayName("5 letter word")
-    void fiveLetterWord(){
-        GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length5));
-    }
-
-    @Test
-    @DisplayName("6 letter word")
-    void sixLetterWord(){
-        GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length6));
-    }
-
-    @Test
-    @DisplayName("7 letter word")
-    void sevenLetterWord(){
-        GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
-        assertFalse(gameEngine.wordGuessed(length7));
+        assertSame(guessesLeftBefore, guessesLeftAfter);
     }
 
     @Test
     @DisplayName("Speciale characters moeten INCORRECT teruggeven.")
-    void specialCharsNoException(){
+    void roundController_InputSpecialChars_ReturnIncorrect(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = broer
@@ -95,7 +68,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Characters met spatie moeten incorrect teruggeven")
-    void charWithSpace(){
+    void roundController_InputCharWithSpace_ReturnIncorrect(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = 3huis
@@ -108,7 +81,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Woord met een cijfer erin moet INCORRECT teruggeven")
-    void charWithNumberIncorrect(){
+    void roundController_InputNumber_ReturnIncorrect(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = huise
@@ -122,7 +95,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Als er een verkeerde lengte wordt meegegeven dan de levelstate moet er een false returnen")
-    void gameCantStartWithWrongWordLength(){
+    void start_LevelStateDiffWordLength_ReturnFalse(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = papier
@@ -133,7 +106,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("De game kan gestart worden als de juiste woord lengte word meegegeven")
-    void gameCanStartWithCorrectWordLength(){
+    void start_WordLengthCorrect_ReturnTrue(){
         GameEngine gameEngine = new GameEngine();
 
         //word to guess = astma
@@ -149,7 +122,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Als woord geraden is dan wordguessed == true")
-    void wordGuessedReturnsTrue(){
+    void wordGuessed_CorrectWord_ReturnTrue(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
         gameEngine.roundController("hallo");
@@ -159,7 +132,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Woord in een keer geraden is 50 punten")
-    void firstGuessCorrect(){
+    void roundController_WordGuessedFirst_FiftyPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
         gameEngine.roundController("hallo");
@@ -168,8 +141,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Woord 2 keer fout en daarna goed is 40 punten")
-    void secondGuessCorrect(){
+    @DisplayName("Woord 1 keer fout en daarna goed is 40 punten")
+    void roundController_WordGuessedSecond_FortyPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
         gameEngine.roundController("mamaa");
@@ -179,8 +152,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Woord 3 keer fout en daarna goed is 30 punten")
-    void thirdGuessCorrect(){
+    @DisplayName("Woord 2 keer fout en daarna goed is 30 punten")
+    void roundController_WordGuessedThird_ThirtyPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
         gameEngine.roundController("wekke");
@@ -191,8 +164,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Woord 4 keer fout en daarna goed is 20 punten")
-    void fourthGuessCorrect(){
+    @DisplayName("Woord 3 keer fout en daarna goed is 20 punten")
+    void roundController_WordGuessedFourth_TwentyPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
         gameEngine.roundController("astma");
@@ -204,8 +177,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Woord 5 keer fout en daarna goed is 10 punten")
-    void fifthGuessCorrect(){
+    @DisplayName("Woord 4 keer fout en daarna goed is 10 punten")
+    void roundController_WordGuessedFifth_TenPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
 
@@ -220,7 +193,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Het woord nooit geraden")
-    void notGuessedRightWord(){
+    void roundController_NeverGuessed_ZeroPoints(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("hallo");
 
@@ -231,12 +204,13 @@ class GameEngineTest {
         gameEngine.roundController("astma");
         gameEngine.roundController("appel");
 
+        assertSame(0, gameEngine.getScore());
         assertSame(GameState.LOST, gameEngine.getGameState());
     }
 
     @Test
     @DisplayName("Woord is geraden moet weer op false nadat een niewe ronde begint")
-    void afterWordGuessChangeVariable(){
+    void isWordGuessed_AfterGuessed_ReturnFalse(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("adres");
         assertFalse(gameEngine.isWordGuessed());
@@ -251,25 +225,26 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Game is niet gestart geeft false")
-    void gameNotStarted(){
+    void gameStarted_Not_ReturnFalse(){
         GameEngine gameEngine = new GameEngine();
         assertFalse(gameEngine.gameStarted());
     }
 
     @Test
     @DisplayName("Game is niet gestart getGameInfo geeft start = false terug")
-    void gameNotStartedGameInfo(){
+    void getGameInfo_NotStarted_ReturnStartFalse(){
         GameEngine gameEngine = new GameEngine();
+        JsonObject gameInfo = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
-        String gameInfo = gameEngine.getGameInfo();
+        boolean startValue = gameInfo.get("start").getAsBoolean();
 
-        assertEquals("{\"start\":false}", gameInfo);
+        assertFalse(startValue);
     }
 
 
     @Test
     @DisplayName("Game is gestart en geeft true terug")
-    void gameStarted(){
+    void gameStarted_Started_ReturnsTrue(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("astma");
         assertTrue(gameEngine.gameStarted());
@@ -277,7 +252,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Game start geeft een woord lengte van 5 terug")
-    void lengthFiveWordAtStart(){
+    void gameState_CorrectLength_ReturnLengthFive(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
 
@@ -286,7 +261,7 @@ class GameEngineTest {
 
     @Test
     @DisplayName("Volgende ronde geeft een woord lengte van 6 terug")
-    void lengthSixWordAtNextRound(){
+    void nextRound_SecondRound_ReturnWordSixLetter(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
         gameEngine.roundController("papie");
@@ -296,8 +271,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Game start geeft een woord lengte van 7 terug")
-    void lengthSeveneWordAtFinal(){
+    @DisplayName("Final ronde geeft een woord lengte van 7 terug")
+    void nextRound_FinalRound_ReturnWordSevenLetters(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("papie");
 
@@ -311,8 +286,8 @@ class GameEngineTest {
     }
 
     @Test
-    @DisplayName("Na het raden van de laatste woord in de laatste ronde moet je een WIN krijgen")
-    void getWinAfterWinning(){
+    @DisplayName("Na het raden van het laatste woord in de laatste ronde moet je een WIN krijgen")
+    void gameState_Won_GameStateWon(){
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("appel");
         gameEngine.roundController("appel");
@@ -324,6 +299,55 @@ class GameEngineTest {
         gameEngine.roundController("afstand");
 
         assertSame(GameState.WON, gameEngine.getGameState());
+    }
+
+    @Test
+    @DisplayName("Als je alle rondes gewonnen hebt dan gameinfo won returned true")
+    void gameInfo_Won_ReturnTrue(){
+        GameEngine gameEngine = new GameEngine();
+
+        gameEngine.start("astma");
+        gameEngine.roundController("astma");
+
+        gameEngine.nextRound("badpak");
+        gameEngine.roundController("badpak");
+
+        gameEngine.nextRound("element");
+        gameEngine.roundController("element");
+
+        JsonObject gameInfo = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
+
+        boolean wonValue = gameInfo.get("won").getAsBoolean();
+
+        assertTrue(wonValue);
+    }
+
+    @Test
+    @DisplayName("Volgende ronde alleen toegestaan als het woord geraden is en gamestate==Playing")
+    void nextRoundAllowed_WordGuessed_ReturnTrue(){
+        GameEngine gameEngine = new GameEngine();
+
+        gameEngine.start("astma");
+        gameEngine.roundController("astma");
+
+        assertTrue(gameEngine.nextRoundAllowed());
+    }
+
+    @Test
+    @DisplayName("Als de game niet gestart is dan nextRoundAllowed==false")
+    void nextRoundAllowed_GameNotStarted_ReturnFalse(){
+        GameEngine gameEngine = new GameEngine();
+
+        assertFalse(gameEngine.nextRoundAllowed());
+    }
+
+    @Test
+    @DisplayName("Als het woord nog niet geraden is dan nextRoundAllowed==false")
+    void nextRoundAllowed_WordNotGuessed_ReturnFalse(){
+        GameEngine gameEngine = new GameEngine();
+
+        gameEngine.start("patat");
+        assertFalse(gameEngine.nextRoundAllowed());
     }
 
 }

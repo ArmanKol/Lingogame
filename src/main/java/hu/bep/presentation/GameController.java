@@ -53,12 +53,12 @@ public class GameController{
         GameEngine gameEngine = new GameEngine();
         ResponseEntity<String> response;
 
+        LOGGER.info(session.isNew());
 
         if(session.isNew()){
             String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
 
-            LOGGER.info(session.isNew());
-            LOGGER.info(randomWord);
+            //LOGGER.info(randomWord);
 
             if(gameEngine.start(randomWord)){
                 session.setAttribute("gameEngine", gameEngine);
@@ -66,6 +66,9 @@ public class GameController{
             }else{
                 response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
             }
+        }else if(session.getAttribute("gameEngine") != null) {
+            GameEngine gameEnginee = (GameEngine) session.getAttribute("gameEngine");
+            response = new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
         }else{
             response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.BAD_REQUEST);
         }
@@ -81,6 +84,8 @@ public class GameController{
 
         GameEngine gameEnginee = (GameEngine) request.getSession(false).getAttribute("gameEngine");
 
+        System.out.println(gameEnginee.getGameInfo());
+
         if(gameEnginee.gameStarted()){
             gameEnginee.roundController(word);
 
@@ -95,8 +100,8 @@ public class GameController{
         }
     }
 
-    @PostMapping("/api/lingo/savescore/{name}")
-    public ResponseEntity<String> saveScore(@PathVariable String name, HttpServletRequest request){
+    @PostMapping("/api/lingo/savescore")
+    public ResponseEntity<String> saveScore(@RequestBody String name, HttpServletRequest request){
         if(request.getSession(false) == null){
             return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
@@ -107,6 +112,8 @@ public class GameController{
             int score = gameEngine.getScore();
 
             scoreRepository.save(new Player(name, score));
+
+            request.getSession(false).invalidate();
 
             return new ResponseEntity<>("Saved", HttpStatus.OK);
         }

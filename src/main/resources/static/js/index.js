@@ -23,8 +23,8 @@ function sendWord(){
             //document.getElementById("wordLength").setAttribute("maxlength", data.wordlength);
             document.getElementById("feedbackWord").innerHTML = data.feedbackword;
             console.log(data);
-            
-            if(data.won){
+
+            if(data.won !== undefined){
                 showEnd(data);
             }
 
@@ -42,7 +42,7 @@ function showEnd(data){
 function saveScore(){
     var input = document.getElementById("playerName").value;
 
-    fetch('http://localhost:8080/api/lingo/savescore/'+ input)
+    fetch('http://localhost:8080/api/lingo/savescore/', {method: 'POST', body: input})
         .then(response => response.json().then(data => {
             console.log(data);
         }));
