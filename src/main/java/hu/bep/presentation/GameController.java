@@ -1,5 +1,6 @@
 package hu.bep.presentation;
 
+import com.google.gson.JsonObject;
 import hu.bep.logic.GameEngine;
 import hu.bep.logic.RandomWordGenerator;
 import hu.bep.logic.state.GameState;
@@ -58,7 +59,7 @@ public class GameController{
         if(session.isNew()){
             String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
 
-            //LOGGER.info(randomWord);
+            LOGGER.info(randomWord);
 
             if(gameEngine.start(randomWord)){
                 session.setAttribute("gameEngine", gameEngine);
@@ -76,15 +77,13 @@ public class GameController{
         return response;
     }
 
-    @GetMapping("/api/lingo/guess/{word}")
-    public ResponseEntity<String> guessWord(@PathVariable String word, HttpServletRequest request){
+    @PostMapping("/api/lingo/guess")
+    public ResponseEntity<String> guessWord(@RequestBody String word, HttpServletRequest request){
         if(request.getSession(false) == null){
             return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
 
         GameEngine gameEnginee = (GameEngine) request.getSession(false).getAttribute("gameEngine");
-
-        System.out.println(gameEnginee.getGameInfo());
 
         if(gameEnginee.gameStarted()){
             gameEnginee.roundController(word);
@@ -102,8 +101,12 @@ public class GameController{
 
     @PostMapping("/api/lingo/savescore")
     public ResponseEntity<String> saveScore(@RequestBody String name, HttpServletRequest request){
+        LOGGER.info(name);
+        JsonObject response = new JsonObject();
+
         if(request.getSession(false) == null){
-            return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
+            response.addProperty("session", "No session available");
+            return new ResponseEntity<>(response.toString(), HttpStatus.BAD_REQUEST);
         }
 
         GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
@@ -115,10 +118,11 @@ public class GameController{
 
             request.getSession(false).invalidate();
 
-            return new ResponseEntity<>("Saved", HttpStatus.OK);
+            response.addProperty("saved", true);
+            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
         }
-
-        return new ResponseEntity<>("Could not be saved", HttpStatus.CONFLICT);
+        response.addProperty("saved", false);
+        return new ResponseEntity<>(response.toString(), HttpStatus.CONFLICT);
     }
 
     @GetMapping("/api/lingo/scoreboard")

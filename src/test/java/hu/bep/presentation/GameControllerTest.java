@@ -102,7 +102,9 @@ class GameControllerTest {
 
         body = controller.saveScore("player", request).getBody();
 
-        assertEquals("Saved", body);
+        JsonObject object = JsonParser.parseString(body.toString()).getAsJsonObject();
+
+        assertTrue(object.get("saved").getAsBoolean());
 
         scoreboardRepository.deleteByPlayerName("player");
     }
@@ -120,7 +122,9 @@ class GameControllerTest {
 
         body = controller.saveScore("player2", request).getBody();
 
-        assertEquals("Could not be saved", body);
+        JsonObject object = JsonParser.parseString(body.toString()).getAsJsonObject();
+
+        assertFalse(object.get("saved").getAsBoolean());
     }
 
     @Test
@@ -163,8 +167,10 @@ class GameControllerTest {
 
         ResponseEntity response = controller.saveScore("Pieter", request);
 
+        JsonObject object = JsonParser.parseString(response.getBody().toString()).getAsJsonObject();
+
         assertSame(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("No session available", response.getBody());
+        assertEquals("No session available", object.get("session").getAsString());
     }
 
     @Test
