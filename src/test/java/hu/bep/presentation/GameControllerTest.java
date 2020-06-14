@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @WebAppConfiguration
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@DisplayName("Game controller")
+@DisplayName("Game controller test")
 class GameControllerTest {
 
     @Autowired

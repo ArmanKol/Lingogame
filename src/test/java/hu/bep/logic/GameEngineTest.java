@@ -7,26 +7,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Game engine")
+@DisplayName("Game engine test")
 class GameEngineTest {
-    private static final String length3 = "ban";
-
-    private static final String specialChars1 = "back-end";
-
-    private static final String wordWithSpace = "su pe";
-    private static final String wordWithNumbers = "3huis";
-
-    private static final String wordToGuess_5letters = "broer";
-    private static final String wordToGuess_5letters_same = "broer";
 
     @Test
-    @DisplayName("Woord niet geraden")
-    void wordGuessed_NotSameWord_ReturnFalse(){
+    @DisplayName("Woord niet geraden verminderd beurten")
+    void wordGuessed_NotSameWord_MinusOneGuessesLeft(){
         GameEngine gameEngine = new GameEngine();
-        gameEngine.start(wordToGuess_5letters);
+
+        gameEngine.start("astma");
 
         JsonObject gameInfoBefore = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
-        gameEngine.roundController(length3);
+        gameEngine.roundController("patat");
         JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
         int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
@@ -38,59 +30,19 @@ class GameEngineTest {
     @Test
     @DisplayName("Woord geraden")
     void wordGuessed_SameWord_ReturnTrue(){
+        String wordToGuess_5letters = "broer";
+
         GameEngine gameEngine = new GameEngine();
         gameEngine.start(wordToGuess_5letters);
 
         JsonObject gameInfoBefore = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
-        gameEngine.roundController(wordToGuess_5letters_same);
+        gameEngine.roundController(wordToGuess_5letters);
         JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
         int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
         int guessesLeftAfter = gameInfoAfter.get("guessesleft").getAsInt();
 
         assertSame(guessesLeftBefore, guessesLeftAfter);
-    }
-
-    @Test
-    @DisplayName("Speciale characters moeten INCORRECT teruggeven.")
-    void roundController_InputSpecialChars_ReturnIncorrect(){
-        GameEngine gameEngine = new GameEngine();
-
-        //word to guess = broer
-        gameEngine.start(wordToGuess_5letters);
-
-        //input word = back-end
-        gameEngine.roundController(specialChars1);
-
-
-        assertEquals("b: CORRECT a: INCORRECT c: INCORRECT k: INCORRECT -: INCORRECT ", gameEngine.getFeedbackWord());
-    }
-
-    @Test
-    @DisplayName("Characters met spatie moeten incorrect teruggeven")
-    void roundController_InputCharWithSpace_ReturnIncorrect(){
-        GameEngine gameEngine = new GameEngine();
-
-        //word to guess = 3huis
-        gameEngine.start(wordWithSpace);
-
-        gameEngine.roundController(wordWithSpace);
-
-        assertEquals("s: CORRECT u: CORRECT  : CORRECT p: CORRECT e: CORRECT ", gameEngine.getFeedbackWord());
-    }
-
-    @Test
-    @DisplayName("Woord met een cijfer erin moet INCORRECT teruggeven")
-    void roundController_InputNumber_ReturnIncorrect(){
-        GameEngine gameEngine = new GameEngine();
-
-        //word to guess = huise
-        gameEngine.start("huise");
-
-        //Input word 3huis
-        gameEngine.roundController(wordWithNumbers);
-
-        assertEquals("3: INCORRECT h: PRESENT u: PRESENT i: PRESENT s: PRESENT ", gameEngine.getFeedbackWord());
     }
 
     @Test
