@@ -21,8 +21,8 @@ class GameEngineTest {
         gameEngine.roundController("patat");
         JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
-        int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
-        int guessesLeftAfter = gameInfoAfter.get("guessesleft").getAsInt();
+        int guessesLeftBefore = gameInfoBefore.get("guessesLeft").getAsInt();
+        int guessesLeftAfter = gameInfoAfter.get("guessesLeft").getAsInt();
 
         assertSame(guessesLeftBefore -1, guessesLeftAfter);
     }
@@ -39,8 +39,8 @@ class GameEngineTest {
         gameEngine.roundController(wordToGuess_5letters);
         JsonObject gameInfoAfter = JsonParser.parseString(gameEngine.getGameInfo()).getAsJsonObject();
 
-        int guessesLeftBefore = gameInfoBefore.get("guessesleft").getAsInt();
-        int guessesLeftAfter = gameInfoAfter.get("guessesleft").getAsInt();
+        int guessesLeftBefore = gameInfoBefore.get("guessesLeft").getAsInt();
+        int guessesLeftAfter = gameInfoAfter.get("guessesLeft").getAsInt();
 
         assertSame(guessesLeftBefore, guessesLeftAfter);
     }

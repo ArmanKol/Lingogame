@@ -14,6 +14,13 @@ public class GameEngine {
     private LevelState levelState;
     private boolean wordIsGuessed;
 
+    private static final String SCORE_PROPERTY = "score";
+    private static final String GUESSESLEFT_PROPERTY = "guessesLeft";
+    private static final String GAMESTATE_PROPERTY = "gameState";
+    private static final String LEVELSTATE_PROPERTY = "levelState";
+    private static final String WORDISGUESSED_PROPERTY = "wordIsGuessed";
+    private static final String WORDTOGUESS_PROPERTY = "wordToGuess";
+
     public GameEngine(){
         levelState= LevelState.FIVE_LETTER_WORD;
         wordChecker = new WordChecker();
@@ -142,18 +149,18 @@ public class GameEngine {
         JsonObject gameInfo = new JsonObject();
 
         if(gameState == GameState.WON || gameState == GameState.LOST){
-            gameInfo.addProperty("score", score);
+            gameInfo.addProperty(SCORE_PROPERTY, score);
             gameInfo.addProperty("won", gameState == GameState.WON);
             gameInfo.addProperty("feedbackword", wordChecker.getFeedback());
         }else if(gameState == GameState.PLAYING){
-            gameInfo.addProperty("guessesleft", guessesLeft);
-            gameInfo.addProperty("score", score);
+            gameInfo.addProperty(GUESSESLEFT_PROPERTY, guessesLeft);
+            gameInfo.addProperty(SCORE_PROPERTY, score);
             gameInfo.addProperty("wordlength", getRightLengthByGameState());
             gameInfo.addProperty("feedbackword", wordChecker.getFeedback());
         }else if(gameState == null){
             gameInfo.addProperty("start", false);
-            gameInfo.addProperty("guessesleft", guessesLeft);
-            gameInfo.addProperty("score", score);
+            gameInfo.addProperty(GUESSESLEFT_PROPERTY, guessesLeft);
+            gameInfo.addProperty(SCORE_PROPERTY, score);
             gameInfo.addProperty("wordlength", getRightLengthByGameState());
         }
 
@@ -163,12 +170,12 @@ public class GameEngine {
     public String getGameInfoForSession(){
         JsonObject gameInfo = new JsonObject();
 
-        gameInfo.addProperty("guessesLeft", guessesLeft);
-        gameInfo.addProperty("score", score);
-        gameInfo.addProperty("gameState", gameState.toString());
-        gameInfo.addProperty("levelState", levelState.toString());
-        gameInfo.addProperty("wordIsGuessed", wordIsGuessed);
-        gameInfo.addProperty("wordToGuess", getGivenWord());
+        gameInfo.addProperty(GUESSESLEFT_PROPERTY, guessesLeft);
+        gameInfo.addProperty(SCORE_PROPERTY, score);
+        gameInfo.addProperty(GAMESTATE_PROPERTY, gameState.toString());
+        gameInfo.addProperty(LEVELSTATE_PROPERTY, levelState.toString());
+        gameInfo.addProperty(WORDISGUESSED_PROPERTY, wordIsGuessed);
+        gameInfo.addProperty(WORDTOGUESS_PROPERTY, getGivenWord());
 
         return gameInfo.toString();
     }
@@ -176,12 +183,12 @@ public class GameEngine {
     public static GameEngine turnInfoIntoEngine(String input){
         JsonObject gameInfo = JsonParser.parseString(input).getAsJsonObject();
 
-        int guessesLeft = gameInfo.get("guessesLeft").getAsInt();
-        int score = gameInfo.get("score").getAsInt();
-        GameState gameState = GameState.valueOf(gameInfo.get("gameState").getAsString());
-        LevelState levelState = LevelState.valueOf(gameInfo.get("levelState").getAsString());;
-        boolean wordIsGuessed = gameInfo.get("wordIsGuessed").getAsBoolean();
-        String wordToGuess = gameInfo.get("wordToGuess").getAsString();
+        int guessesLeft = gameInfo.get(GUESSESLEFT_PROPERTY).getAsInt();
+        int score = gameInfo.get(SCORE_PROPERTY).getAsInt();
+        GameState gameState = GameState.valueOf(gameInfo.get(GAMESTATE_PROPERTY).getAsString());
+        LevelState levelState = LevelState.valueOf(gameInfo.get(LEVELSTATE_PROPERTY).getAsString());
+        boolean wordIsGuessed = gameInfo.get(WORDISGUESSED_PROPERTY).getAsBoolean();
+        String wordToGuess = gameInfo.get(WORDTOGUESS_PROPERTY).getAsString();
 
         return new GameEngine(guessesLeft, score, gameState, levelState, wordIsGuessed, wordToGuess);
     }

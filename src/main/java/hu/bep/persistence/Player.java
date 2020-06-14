@@ -20,16 +20,6 @@ public class Player {
 
     }
 
-    public Player(final long id,  final String playerName, final int totalScore){
-        this.id = id;
-        this.totalScore = totalScore;
-        this.playerName = playerName;
-    }
-
-    public Player(final String playername){
-        this.playerName = playername;
-    }
-
     public Player(final String playername, final int totalscore){
         this.totalScore = totalscore;
         this.playerName = playername;

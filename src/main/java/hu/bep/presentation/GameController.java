@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 public class GameController{
+    private static final String SESSION_GAME_INFO = "gameInfo";
     private static final Logger LOGGER = LogManager.getLogger(GameController.class);
 
     @Autowired
@@ -62,13 +63,13 @@ public class GameController{
             LOGGER.info(randomWord);
 
             if(gameEngine.start(randomWord)){
-                session.setAttribute("gameInfo", gameEngine.getGameInfoForSession());
+                session.setAttribute(SESSION_GAME_INFO, gameEngine.getGameInfoForSession());
                 response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
             }else{
                 response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
             }
-        }else if(session.getAttribute("gameInfo") != null) {
-            String gameInfo = (String) session.getAttribute("gameInfo");
+        }else if(session.getAttribute(SESSION_GAME_INFO) != null) {
+            String gameInfo = (String) session.getAttribute(SESSION_GAME_INFO);
             GameEngine gameEnginee = GameEngine.turnInfoIntoEngine(gameInfo);
 
             response = new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
@@ -84,7 +85,7 @@ public class GameController{
         if(request.getSession(false) == null){
             return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
-        String gameInfo = (String) request.getSession(false).getAttribute("gameInfo");
+        String gameInfo = (String) request.getSession(false).getAttribute(SESSION_GAME_INFO);
 
         GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
@@ -98,10 +99,10 @@ public class GameController{
             }
 
 
-            request.getSession(false).setAttribute("gameInfo", gameEngine.getGameInfoForSession());
+            request.getSession(false).setAttribute(SESSION_GAME_INFO, gameEngine.getGameInfoForSession());
             return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
         }else{
-            request.getSession(false).setAttribute("gameInfo", gameEngine.getGameInfoForSession());
+            request.getSession(false).setAttribute(SESSION_GAME_INFO, gameEngine.getGameInfoForSession());
             return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
         }
     }
@@ -116,7 +117,7 @@ public class GameController{
             return new ResponseEntity<>(response.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        String gameInfo = (String) request.getSession(false).getAttribute("gameInfo");
+        String gameInfo = (String) request.getSession(false).getAttribute(SESSION_GAME_INFO);
         GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
         if(gameEngine.getGameState() != GameState.PLAYING){

@@ -7,18 +7,13 @@ import javax.persistence.*;
 public class Word {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
     @Column(name = "word")
     private String word;
 
     public Word(){}
-
-    public Word(final long id, final String word){
-        this.id = id;
-        this.word = word;
-    }
 
     public Word(String word){
         this.word = word;
