@@ -12,7 +12,7 @@
 
 	<groupId>hu.bep</groupId>
 	<artifactId>lingogame</artifactId>
-	<version>0.6.0</version>
+	<version>0.6.1</version>
 	<name>lingogame</name>
 	<description>Lingo game voor bep</description>
 	<packaging>jar</packaging>
