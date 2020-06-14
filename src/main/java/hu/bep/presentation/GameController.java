@@ -62,13 +62,15 @@ public class GameController{
             LOGGER.info(randomWord);
 
             if(gameEngine.start(randomWord)){
-                session.setAttribute("gameEngine", gameEngine);
+                session.setAttribute("gameInfo", gameEngine.getGameInfoForSession());
                 response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
             }else{
                 response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
             }
-        }else if(session.getAttribute("gameEngine") != null) {
-            GameEngine gameEnginee = (GameEngine) session.getAttribute("gameEngine");
+        }else if(session.getAttribute("gameInfo") != null) {
+            String gameInfo = (String) session.getAttribute("gameInfo");
+            GameEngine gameEnginee = GameEngine.turnInfoIntoEngine(gameInfo);
+
             response = new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
         }else{
             response = new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.BAD_REQUEST);
@@ -82,20 +84,25 @@ public class GameController{
         if(request.getSession(false) == null){
             return new ResponseEntity<>("No session available", HttpStatus.BAD_REQUEST);
         }
+        String gameInfo = (String) request.getSession(false).getAttribute("gameInfo");
 
-        GameEngine gameEnginee = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+        GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
-        if(gameEnginee.gameStarted()){
-            gameEnginee.roundController(word);
+        if(gameEngine.gameStarted()){
+            gameEngine.roundController(word);
 
-            if(gameEnginee.nextRoundAllowed()){
-                String randomWord = getRandomWord(gameEnginee.getRightLengthByGameState());
+            if(gameEngine.nextRoundAllowed()){
+                String randomWord = getRandomWord(gameEngine.getRightLengthByGameState());
                 LOGGER.info(randomWord);
-                gameEnginee.nextRound(randomWord);
+                gameEngine.nextRound(randomWord);
             }
-            return new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.OK);
+
+
+            request.getSession(false).setAttribute("gameInfo", gameEngine.getGameInfoForSession());
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.OK);
         }else{
-            return new ResponseEntity<>(gameEnginee.getGameInfo(), HttpStatus.CONFLICT);
+            request.getSession(false).setAttribute("gameInfo", gameEngine.getGameInfoForSession());
+            return new ResponseEntity<>(gameEngine.getGameInfo(), HttpStatus.CONFLICT);
         }
     }
 
@@ -109,7 +116,8 @@ public class GameController{
             return new ResponseEntity<>(response.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+        String gameInfo = (String) request.getSession(false).getAttribute("gameInfo");
+        GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
         if(gameEngine.getGameState() != GameState.PLAYING){
             int score = gameEngine.getScore();

@@ -132,16 +132,17 @@ class GameControllerTest {
     void guessWord_WordGuessed_StartNewRound(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         controller.startGame(request.getSession(true));
-        GameEngine gameEngine;
 
-        gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+        String gameInfo = request.getSession(false).getAttribute("gameInfo").toString();
+        GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
         String wordToGuess = gameEngine.getGivenWord();
         int lengthWordRoundOne = wordToGuess.length();
 
         controller.guessWord(wordToGuess, request);
 
-        gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+        gameInfo = request.getSession(false).getAttribute("gameInfo").toString();
+        gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
         int lenthWordRoundTwo = gameEngine.getGivenWord().length();
 
@@ -153,7 +154,9 @@ class GameControllerTest {
     void guessWord_RoundStarted_ResponseOk(){
         MockHttpServletRequest request = new MockHttpServletRequest();
         controller.startGame(request.getSession(true));
-        GameEngine gameEngine = (GameEngine) request.getSession(false).getAttribute("gameEngine");
+
+        String gameInfo = request.getSession(false).getAttribute("gameInfo").toString();
+        GameEngine gameEngine = GameEngine.turnInfoIntoEngine(gameInfo);
 
         if(gameEngine.gameStarted()){
             assertSame(HttpStatus.OK, controller.guessWord("started", request).getStatusCode());
@@ -195,17 +198,12 @@ class GameControllerTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.start("teste");
 
-        System.out.println();
-
         when(session.isNew()).thenReturn(true).thenReturn(false).thenReturn(false);
-        when(session.getAttribute("gameEngine")).thenReturn(gameEngine);
+        when(session.getAttribute("gameInfo")).thenReturn(gameEngine.getGameInfoForSession());
 
         ResponseEntity response = controller.startGame(session);
 
         ResponseEntity response2 = controller.startGame(session);
-
-        System.out.println(response);
-        System.out.println(response2);
 
         assertSame(HttpStatus.OK, response2.getStatusCode());
         assertEquals(response.getBody(), response2.getBody());

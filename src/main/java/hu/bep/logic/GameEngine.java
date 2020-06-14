@@ -1,11 +1,12 @@
 package hu.bep.logic;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import hu.bep.logic.state.GameState;
 import hu.bep.logic.state.LevelState;
 
 public class GameEngine {
-    private WordChecker wordChecker = new WordChecker();
+    private WordChecker wordChecker;
 
     private int guessesLeft;
     private int score;
@@ -15,6 +16,19 @@ public class GameEngine {
 
     public GameEngine(){
         levelState= LevelState.FIVE_LETTER_WORD;
+        wordChecker = new WordChecker();
+    }
+
+    private GameEngine(int guessesLeft, int score, GameState gameState, LevelState levelState, boolean wordIsGuessed, String wordToGuess){
+        this.guessesLeft = guessesLeft;
+        this.score = score;
+        this.gameState = gameState;
+        this.levelState = levelState;
+        this.wordIsGuessed = wordIsGuessed;
+
+        wordChecker = new WordChecker();
+        wordChecker.setWordToGuess(wordToGuess);
+        wordChecker.fillHashMapWithLetters(wordToGuess, wordChecker.getCharsWordToGuess());
     }
 
     public boolean start(final String word){
@@ -52,15 +66,13 @@ public class GameEngine {
     }
 
     public void nextRound(String newWord){
-        if(gameState == GameState.WON){
-            return;
+        if(gameState != GameState.WON){
+            wordIsGuessed = false;
+            wordChecker.getCharsWordToGuess().clear();
+            guessesLeft = 5;
+            wordChecker.setWordToGuess(newWord);
+            wordChecker.fillHashMapWithLetters(newWord, wordChecker.getCharsWordToGuess());
         }
-
-        wordIsGuessed = false;
-        wordChecker.getCharsWordToGuess().clear();
-        guessesLeft = 5;
-        wordChecker.setWordToGuess(newWord);
-        wordChecker.fillHashMapWithLetters(newWord, wordChecker.getCharsWordToGuess());
     }
 
     public boolean nextRoundAllowed(){
@@ -146,6 +158,32 @@ public class GameEngine {
         }
 
         return gameInfo.toString();
+    }
+
+    public String getGameInfoForSession(){
+        JsonObject gameInfo = new JsonObject();
+
+        gameInfo.addProperty("guessesLeft", guessesLeft);
+        gameInfo.addProperty("score", score);
+        gameInfo.addProperty("gameState", gameState.toString());
+        gameInfo.addProperty("levelState", levelState.toString());
+        gameInfo.addProperty("wordIsGuessed", wordIsGuessed);
+        gameInfo.addProperty("wordToGuess", getGivenWord());
+
+        return gameInfo.toString();
+    }
+
+    public static GameEngine turnInfoIntoEngine(String input){
+        JsonObject gameInfo = JsonParser.parseString(input).getAsJsonObject();
+
+        int guessesLeft = gameInfo.get("guessesLeft").getAsInt();
+        int score = gameInfo.get("score").getAsInt();
+        GameState gameState = GameState.valueOf(gameInfo.get("gameState").getAsString());
+        LevelState levelState = LevelState.valueOf(gameInfo.get("levelState").getAsString());;
+        boolean wordIsGuessed = gameInfo.get("wordIsGuessed").getAsBoolean();
+        String wordToGuess = gameInfo.get("wordToGuess").getAsString();
+
+        return new GameEngine(guessesLeft, score, gameState, levelState, wordIsGuessed, wordToGuess);
     }
 
     public String getGivenWord(){
